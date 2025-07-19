@@ -1,6 +1,6 @@
 <?php
 
-namespace Domain\Inpost;
+namespace Domain\Inpost\Parcel;
 
 /**
  * Parcel weight. Inpost allows only kg as unit.

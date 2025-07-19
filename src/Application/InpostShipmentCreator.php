@@ -4,7 +4,7 @@ namespace Application;
 
 use DateTime;
 use Domain\Inpost\Insurance;
-use Domain\Inpost\Parcel;
+use Domain\Inpost\Parcel\Parcel;
 use Domain\Inpost\Receiver;
 use Exception;
 use GuzzleHttp\Client;
@@ -42,6 +42,8 @@ class InpostShipmentCreator
     }
 
     /**
+     * Create Inpost Courier shipment
+     *
      * @param Receiver $receiver
      * @param Parcel[] $parcels
      * @param Insurance $insurance

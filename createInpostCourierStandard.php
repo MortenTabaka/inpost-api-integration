@@ -5,12 +5,12 @@ require __DIR__ . '/vendor/autoload.php';
 use Application\InpostShipmentCreator;
 use Domain\Inpost\Address;
 use Domain\Inpost\CourierStandardAdditionalServices;
-use Domain\Inpost\Dimension;
 use Domain\Inpost\InpostCourierServices;
 use Domain\Inpost\Insurance;
-use Domain\Inpost\Parcel;
+use Domain\Inpost\Parcel\Dimension;
+use Domain\Inpost\Parcel\Parcel;
+use Domain\Inpost\Parcel\Weight;
 use Domain\Inpost\Receiver;
-use Domain\Inpost\Weight;
 
 $token = getenv('INPOST_TOKEN');
 

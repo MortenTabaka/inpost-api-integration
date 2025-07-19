@@ -1,6 +1,6 @@
 <?php
 
-namespace Domain\Inpost;
+namespace Domain\Inpost\Parcel;
 
 class Parcel
 {
