@@ -1,0 +1,12 @@
+{
+    "require": {
+        "guzzlehttp/guzzle": "^7.9",
+        "vlucas/phpdotenv": "^5.6"
+    },
+    "autoload": {
+        "psr-4": {
+            "Application\\": "src/Application/",
+            "Domain\\": "src/Domain/"
+        }
+    }
+}
