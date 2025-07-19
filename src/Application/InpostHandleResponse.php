@@ -93,15 +93,15 @@ class InpostHandleResponse
 
         $contentsDecoded = json_decode($contents, true, 512, JSON_THROW_ON_ERROR);
 
-        if (
-            $statusCode === StatusCodes::BAD_REQUEST->value
-            && $contentsDecoded['error'] === "missing_trucker_id"
-        ) {
-            $message = "[HTTP {$response->getStatusCode()}][missing_trucker_id] Wymagane jest posiadanie realnej umowy z Inpostem (według informacji z infolinii)" . PHP_EOL;
-        } else {
-            $message = "[HTTP {$response->getStatusCode()}] Error: $contents" . PHP_EOL;
-        }
+        $errorMessage = $contentsDecoded['error'] ?? null;
 
-        return "[{$nowFormatted}] " . $message;
+        $message = match ($errorMessage) {
+            "missing_trucker_id" => "[missing_trucker_id] Wymagane jest posiadanie realnej umowy z Inpostem" . PHP_EOL,
+            "no_carriers" => "[no_carriers] The organization has no carriers contracted" . PHP_EOL,
+            "carrier_unavailable" => "[carrier_unavailable] The organization has no carriers contracted providing the requested service" . PHP_EOL,
+            default => "Error: $contents" . PHP_EOL,
+        };
+
+        return "[$nowFormatted] [HTTP {$response->getStatusCode()}] " . $message;
     }
 }
