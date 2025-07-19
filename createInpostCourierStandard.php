@@ -11,25 +11,23 @@ $dotenv->load();
 
 $token = $_ENV['INPOST_API_TOKEN'] ?? null;
 
-if ($token) {
-    echo "Found INPOST_API_TOKEN.\n";
-} else {
-    echo "INPOST_API_TOKEN is missing in .env file.\n.\n";
-    exit(1);
-}
-
 $baseInpostUri = $_ENV['INPOST_API_URL'] ?? null;
 
-if ($baseInpostUri) {
-    echo "Found INPOST_API_URL.\n";
-} else {
-    echo "INPOST_API_URL is not set in environment variables.\n";
+$organization = $_ENV['INPOST_ORGANIZATION_ID'] ?? null;
+
+if (
+    !$token
+    || !$baseInpostUri
+    || !$organization
+) {
+    echo "INPOST_API_TOKEN or INPOST_API_URL or INPOST_ORGANIZATION_ID is missing in .env file.\n";
     exit(1);
 }
 
 $shipmentsHandler = new InpostShipmentCreator(
     $token,
+    $organization,
     $baseInpostUri
 );
 
-$shipmentsHandler->getCreatedShipments();
+$shipmentsHandler->createShipment();

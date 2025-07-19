@@ -14,6 +14,8 @@ class InpostShipmentCreator
 {
     private string $token;
 
+    private string $organizationId;
+
     private Client $inpostClient;
 
     private string $logDir = __DIR__ . '/../../var/logs';
@@ -21,10 +23,13 @@ class InpostShipmentCreator
 
     public function __construct(
         string $token,
+        string $organizationId,
         string $baseInpostUri
     )
     {
         $this->token = $token;
+
+        $this->organizationId = $organizationId;
 
         $this->inpostClient = new Client([
             'base_uri' => $baseInpostUri
