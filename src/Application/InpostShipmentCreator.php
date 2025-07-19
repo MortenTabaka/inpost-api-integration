@@ -41,12 +41,13 @@ class InpostShipmentCreator
 
     /**
      * @param Receiver $receiver
-     * @param Parcel $parcel
+     * @param Parcel[] $parcel
+     * @param string $service
      * @return void
      */
     public function createShipment(
         Receiver $receiver,
-        Parcel $parcel,
+        array $parcels,
         string $service
     ): void
     {
@@ -58,7 +59,7 @@ class InpostShipmentCreator
                     'data-raw' => [
                         'receiver' => $this->buildReceiver($receiver),
                         'parcels' => [
-                            $this->buildParcel($parcel)
+                            $this->buildParcels($parcels)
                         ],
                         'insurance' => [
                             'amount' => 25,
@@ -177,24 +178,30 @@ class InpostShipmentCreator
     }
 
     /**
-     * @param Parcel $parcel
+     * @param Parcel[] $parcels
      * @return array
      */
-    private function buildParcel(Parcel $parcel): array
+    private function buildParcels(array $parcels): array
     {
-        return [
-            'id' => $parcel->id,
-            'dimensions' => [
-                'length' => $parcel->dimension->length,
-                'width' => $parcel->dimension->width,
-                'height' => $parcel->dimension->height,
-                'unit' => $parcel->dimension->unit
-            ],
-            'weight' => [
-                'amount' => $parcel->weight->amount,
-                'unit' => $parcel->weight->unit
-            ],
-            'is_non_standard' => $parcel->isNonStandard
-        ];
+        $parcelObjects = [];
+
+        foreach ($parcels as $parcel) {
+            $parcelObjects[] = [
+                'id' => $parcel->id,
+                'dimensions' => [
+                    'length' => $parcel->dimension->length,
+                    'width' => $parcel->dimension->width,
+                    'height' => $parcel->dimension->height,
+                    'unit' => $parcel->dimension->unit
+                ],
+                'weight' => [
+                    'amount' => $parcel->weight->amount,
+                    'unit' => $parcel->weight->unit
+                ],
+                'is_non_standard' => $parcel->isNonStandard
+            ];
+        }
+
+        return $parcelObjects;
     }
 }

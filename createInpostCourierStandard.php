@@ -52,15 +52,17 @@ $receiver = new Receiver(
     $address
 );
 
-$parcel = new Parcel(
-    '1',
-    new Dimension(10, 10, 10),
-    new Weight(1),
-    false
-);
+$parcels = [
+    new Parcel(
+        '1',
+        new Dimension(10, 10, 10),
+        new Weight(1),
+        false
+    )
+];
 
 $shipmentsHandler->createShipment(
     $receiver,
-    $parcel,
+    $parcels,
     'inpost_courier_standard'
 );
