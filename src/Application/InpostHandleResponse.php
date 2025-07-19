@@ -102,6 +102,6 @@ class InpostHandleResponse
             default => "Error: $contents" . PHP_EOL,
         };
 
-        return "[$nowFormatted] [HTTP {$response->getStatusCode()}] " . $message;
+        return "[$nowFormatted] [HTTP $statusCode] " . $message;
     }
 }

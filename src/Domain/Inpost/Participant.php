@@ -2,7 +2,7 @@
 
 namespace Domain\Inpost;
 
-class Receiver
+class Participant
 {
     public ?string $companyName;
     public ?string $firstName;

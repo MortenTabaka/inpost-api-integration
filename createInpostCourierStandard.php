@@ -10,7 +10,7 @@ use Domain\Inpost\Insurance;
 use Domain\Inpost\Parcel\Dimension;
 use Domain\Inpost\Parcel\Parcel;
 use Domain\Inpost\Parcel\Weight;
-use Domain\Inpost\Receiver;
+use Domain\Inpost\Participant;
 
 $token = getenv('INPOST_TOKEN');
 
@@ -46,7 +46,7 @@ $address = new Address(
     'PL'
 );
 
-$receiver = new Receiver(
+$receiver = new Participant(
     '',
     'Adam',
     'Kowalski',
@@ -67,6 +67,7 @@ $parcels = [
 $insurance = new Insurance(100, 'PLN');
 
 $shipmentsHandler->createShipment(
+    null,
     $receiver,
     $parcels,
     $insurance,

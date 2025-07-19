@@ -5,7 +5,7 @@ namespace Application;
 use DateTime;
 use Domain\Inpost\Insurance;
 use Domain\Inpost\Parcel\Parcel;
-use Domain\Inpost\Receiver;
+use Domain\Inpost\Participant;
 use Exception;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\GuzzleException;
@@ -24,6 +24,11 @@ class InpostCourierShipmentCreator
     private InpostHandleResponse $inpostHandleResponse;
 
 
+    /**
+     * @param string $token Inpost API token
+     * @param string $organizationId Inpost organization ID
+     * @param string $baseInpostUri Inpost API base URI
+     */
     public function __construct(
         string $token,
         string $organizationId,
@@ -42,19 +47,21 @@ class InpostCourierShipmentCreator
     }
 
     /**
-     * Create Inpost Courier shipment
+     * Create Inpost courier shipment
      *
-     * @param Receiver $receiver
+     * @param Participant|null $sender If no data is provided, the organization data for which the shipment is created will be used by default
+     * @param Participant $receiver
      * @param Parcel[] $parcels
-     * @param Insurance $insurance  // required for
-     * @param string $service
+     * @param Insurance $insurance required for courier shipments
+     * @param string $service name of courier service
      * @param string[] $additionalServices
      * @param string $reference
      * @param string $comments
      * @return void
      */
     public function createShipment(
-        Receiver $receiver,
+        ?Participant $sender,
+        Participant $receiver,
         array $parcels,
         Insurance $insurance,
         string $service,
@@ -64,21 +71,28 @@ class InpostCourierShipmentCreator
     ): void
     {
         try {
+            $body = [
+                'receiver' => $this->buildParticipantData($receiver),
+                'parcels' => $this->buildParcels($parcels),
+                'insurance' => $this->buildInsurance($insurance),
+                'service' => $service,
+                'additional_services' => $additionalServices,
+                'reference' => $reference,
+                'comments' => $comments
+            ];
+
+            if ($sender) {
+                $body['sender'] = $this->buildParticipantData($sender);
+            }
+
             $response = $this->inpostClient->post(
                 "/v1/organizations/{$this->organizationId}/shipments",
                 [
                     'headers' => ['Authorization' => "Bearer $this->token", 'Content-Type' => 'application/json'],
-                    'json' => [
-                        'receiver' => $this->buildReceiver($receiver),
-                        'parcels' => $this->buildParcels($parcels),
-                        'insurance' => $this->buildInsurance($insurance),
-                        'service' => $service,
-                        'additional_services' => $additionalServices,
-                        'reference' => $reference,
-                        'comments' => $comments
-                    ]
+                    'json' => $body
                 ]
             );
+
             $this->inpostHandleResponse->logSuccess($response);
         } catch (\Exception | GuzzleException $e) {
             $this->inpostHandleResponse->logError( $e);
@@ -108,10 +122,10 @@ class InpostCourierShipmentCreator
     }
 
     /**
-     * @param Receiver $receiver
+     * @param Participant $receiver
      * @return array
      */
-    private function buildReceiver(Receiver $receiver): array
+    private function buildParticipantData(Participant $receiver): array
     {
         return [
             'company_name' => $receiver->companyName,
