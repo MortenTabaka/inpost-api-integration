@@ -9,6 +9,7 @@ use Domain\Inpost\Receiver;
 use Exception;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\GuzzleException;
+use GuzzleHttp\Exception\RequestException;
 use Psr\Http\Message\ResponseInterface;
 
 /**
@@ -67,9 +68,7 @@ class InpostShipmentCreator
                     'headers' => ['Authorization' => "Bearer $this->token", 'Content-Type' => 'application/json'],
                     'data-raw' => [
                         'receiver' => $this->buildReceiver($receiver),
-                        'parcels' => [
-                            $this->buildParcels($parcels)
-                        ],
+                        'parcels' => $this->buildParcels($parcels),
                         'insurance' => [
                             'amount' => $insurance->amount,
                             'currency' => $insurance->currency
@@ -137,9 +136,17 @@ class InpostShipmentCreator
      */
     private function logError($error): void
     {
-        echo $error->getMessage();
-
         [$today, $nowFormatted] = $this->getDatesForLogs();
+
+        if ($error instanceof RequestException && $error->hasResponse()) {
+            $response = $error->getResponse();
+            $body = $response?->getBody()->getContents();
+            $message = "[{$nowFormatted}] HTTP {$response?->getStatusCode()} Error: {$body}";
+        } else {
+            $message = "[{$nowFormatted}] Exception: {$error->getMessage()}";
+        }
+
+        echo $message . PHP_EOL;
 
         // save to txt file
         file_put_contents(
