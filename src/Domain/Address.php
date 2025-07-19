@@ -12,15 +12,15 @@ class Address
 
     public function __construct(
         string $street,
-        string $building_number,
+        string $buildingNumber,
         string $city,
-        string $post_code,
-        string $country_code
+        string $postCode,
+        string $countryCode
     ) {
         $this->street = $street;
-        $this->buildingNumber = $building_number;
+        $this->buildingNumber = $buildingNumber;
         $this->city = $city;
-        $this->postCode = $post_code;
-        $this->countryCode = $country_code;
+        $this->postCode = $postCode;
+        $this->countryCode = $countryCode;
     }
 }

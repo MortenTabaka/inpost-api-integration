@@ -3,6 +3,8 @@
 namespace Application;
 
 use DateTime;
+use Domain\Parcel;
+use Domain\Receiver;
 use Exception;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\GuzzleException;
@@ -38,16 +40,45 @@ class InpostShipmentCreator
     }
 
     /**
+     * @param Receiver $receiver
+     * @param Parcel $parcel
      * @return void
      */
-    public function createShipment(): void
+    public function createShipment(
+        Receiver $receiver,
+        Parcel $parcel,
+        string $service
+    ): void
     {
-//        try {
-//            $response = $this->getCreatedShipments();
-//            $this->logSuccess($response);
-//        } catch (\Exception | GuzzleException $e) {
-//            $this->logError($e);
-//        }
+        try {
+            $response = $this->inpostClient->post(
+                "/v1/organizations/{$this->organizationId}/shipments",
+                [
+                    'headers' => ['Authorization' => "Bearer $this->token", 'Content-Type' => 'application/json'],
+                    'data-raw' => [
+                        'receiver' => $this->buildReceiver($receiver),
+                        'parcels' => [
+                            $this->buildParcel($parcel)
+                        ],
+                        'insurance' => [
+                            'amount' => 25,
+                            'currency' => 'PLN'
+                        ],
+                        'cod' => [
+                            'amount' => 12.50,
+                            'currency' => 'PLN'
+                        ],
+                        'service' => $service,
+                        'additional_services' => ['email', 'sms'],
+                        'reference' => 'Test',
+                        'comments' => 'dowolny komentarz'
+                    ]
+                ]
+            );
+            $this->logSuccess($response);
+        } catch (\Exception | GuzzleException $e) {
+            $this->logError( $e);
+        }
     }
 
     /**
@@ -70,16 +101,6 @@ class InpostShipmentCreator
         } catch (Exception|GuzzleException $e) {
             $this->logError($e);
         }
-    }
-
-    /**
-     * @return string[] Returns headers array with authorization token
-     */
-    private function getAuthHeaders(): array
-    {
-        return [
-            'Authorization' => "Bearer $this->token"
-        ];
     }
 
     /**
@@ -131,5 +152,49 @@ class InpostShipmentCreator
         $today = $now->format('d-m-Y');
         $nowFormatted = $now->format('Y-m-d H:i:s.v');
         return array($today, $nowFormatted);
+    }
+
+    /**
+     * @param Receiver $receiver
+     * @return array
+     */
+    private function buildReceiver(Receiver $receiver): array
+    {
+        return [
+            'company_name' => $receiver->companyName,
+            'first_name' => $receiver->firstName,
+            'last_name' => $receiver->lastName,
+            'email' => $receiver->email,
+            'phone' => $receiver->phone,
+            'address' => [
+                'street' => $receiver->address->street,
+                'building_number' => $receiver->address->buildingNumber,
+                'city' => $receiver->address->city,
+                'post_code' => $receiver->address->postCode,
+                'country_code' => $receiver->address->countryCode
+            ]
+        ];
+    }
+
+    /**
+     * @param Parcel $parcel
+     * @return array
+     */
+    private function buildParcel(Parcel $parcel): array
+    {
+        return [
+            'id' => $parcel->id,
+            'dimensions' => [
+                'length' => $parcel->dimension->length,
+                'width' => $parcel->dimension->width,
+                'height' => $parcel->dimension->height,
+                'unit' => $parcel->dimension->unit
+            ],
+            'weight' => [
+                'amount' => $parcel->weight->amount,
+                'unit' => $parcel->weight->unit
+            ],
+            'is_non_standard' => $parcel->isNonStandard
+        ];
     }
 }

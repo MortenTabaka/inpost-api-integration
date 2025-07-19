@@ -2,6 +2,9 @@
 
 namespace Domain;
 
+/**
+ * Parcel dimension. Inpost allows only mm as unit.
+ */
 class Dimension
 {
     public float $length;
@@ -12,13 +15,12 @@ class Dimension
     public function __construct(
         float $length,
         float $width,
-        float $height,
-        string $unit
+        float $height
     )
     {
         $this->length = $length;
         $this->width = $width;
         $this->height = $height;
-        $this->unit = $unit;
+        $this->unit = 'mm';  // only `mm` is allowed
     }
 }

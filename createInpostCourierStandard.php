@@ -3,6 +3,11 @@
 require __DIR__ . '/vendor/autoload.php';
 
 use Application\InpostShipmentCreator;
+use Domain\Address;
+use Domain\Dimension;
+use Domain\Parcel;
+use Domain\Receiver;
+use Domain\Weight;
 
 $token = getenv('INPOST_TOKEN');
 
@@ -30,4 +35,32 @@ $shipmentsHandler = new InpostShipmentCreator(
     $baseInpostUri
 );
 
-$shipmentsHandler->createShipment();
+$address = new Address(
+    'Słowackiego',
+    '1',
+    'Warszawa',
+    '00-718',
+    'PL'
+);
+
+$receiver = new Receiver(
+    '',
+    'Adam',
+    'Kowalski',
+    'adam.kowalski@example.com',
+    '+48123456789',
+    $address
+);
+
+$parcel = new Parcel(
+    '1',
+    new Dimension(10, 10, 10),
+    new Weight(1),
+    false
+);
+
+$shipmentsHandler->createShipment(
+    $receiver,
+    $parcel,
+    'inpost_courier_standard'
+);
