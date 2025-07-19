@@ -71,6 +71,8 @@ class InpostCourierShipmentCreator
     ): void
     {
         try {
+            $this->validateReceiver($receiver);
+
             $body = [
                 'receiver' => $this->buildParticipantData($receiver),
                 'parcels' => $this->buildParcels($parcels),
@@ -94,7 +96,7 @@ class InpostCourierShipmentCreator
             );
 
             $this->inpostHandleResponse->logSuccess($response);
-        } catch (\Exception | GuzzleException $e) {
+        } catch (\Exception | GuzzleException | \RuntimeException $e) {
             $this->inpostHandleResponse->logError( $e);
         }
     }
@@ -185,5 +187,23 @@ class InpostCourierShipmentCreator
             'amount' => $insurance->amount,
             'currency' => $insurance->currency
         ];
+    }
+
+    /**
+     * @param Participant $receiver
+     * @return void
+     */
+    private function validateReceiver(Participant $receiver): void
+    {
+        if (
+            empty($receiver->phone) &&
+            empty($receiver->companyName) &&
+            (
+                empty($receiver->firstName) &&
+                empty($receiver->lastName)
+            )
+        ) {
+            throw new \RuntimeException('Receiver data is missing');
+        }
     }
 }
