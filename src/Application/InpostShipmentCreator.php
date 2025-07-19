@@ -6,6 +6,7 @@ use DateTime;
 use Exception;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\GuzzleException;
+use Psr\Http\Message\ResponseInterface;
 
 /**
  * Creates shipments with Inpost API
@@ -61,7 +62,7 @@ class InpostShipmentCreator
                 'GET',
                 '/v1/shipments/ID_Shipments',
                 [
-                    'headers' => $this->getAuthHeaders()
+                    'headers' => ['Authorization' => "Bearer $this->token"]
                 ]
             );
 
@@ -84,10 +85,10 @@ class InpostShipmentCreator
     /**
      * Saves success message to txt file in var/logs
      *
-     * @param $response
+     * @param ResponseInterface $response
      * @return void
      */
-    private function logSuccess($response): void
+    private function logSuccess(ResponseInterface $response): void
     {
         echo $response->getBody()->getContents();
 
