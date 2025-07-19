@@ -97,7 +97,7 @@ class InpostHandleResponse
 
         if (
             $contentsDecoded['error'] === "missing_trucker_id"
-            && $statusCode === StatusCodes::UNAUTHORIZED->value
+            && $statusCode === StatusCodes::BAD_REQUEST->value
         ) {
             echo "Wymagane jest posiadanie realnej umowy z Inpostem (według informacji z infolinii)" . PHP_EOL;
         } else {
