@@ -1,6 +1,6 @@
 <?php
 
-namespace Domain;
+namespace Domain\Inpost;
 
 /**
  * Parcel dimension. Inpost allows only mm as unit.

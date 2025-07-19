@@ -1,6 +1,6 @@
 <?php
 
-namespace Domain;
+namespace Domain\Inpost;
 
 class Receiver
 {

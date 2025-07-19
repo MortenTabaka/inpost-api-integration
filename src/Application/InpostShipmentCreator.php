@@ -3,8 +3,8 @@
 namespace Application;
 
 use DateTime;
-use Domain\Parcel;
-use Domain\Receiver;
+use Domain\Inpost\Parcel;
+use Domain\Inpost\Receiver;
 use Exception;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\GuzzleException;
