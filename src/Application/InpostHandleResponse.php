@@ -17,7 +17,6 @@ class InpostHandleResponse
      *
      * @param $error
      * @return void
-     * @throws JsonException
      */
     public function logError($error): void
     {
@@ -40,7 +39,7 @@ class InpostHandleResponse
         // save to txt file
         file_put_contents(
             "{$this->logDir}/$today-error.txt",
-            "[$nowFormatted] " . $error->getMessage() . "\n",
+            "[$nowFormatted] " . $message . PHP_EOL,
             FILE_APPEND
         );
     }
