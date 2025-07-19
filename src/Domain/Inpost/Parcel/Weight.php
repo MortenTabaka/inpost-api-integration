@@ -11,6 +11,9 @@ class Weight
 
     public string $unit;
 
+    /**
+     * @param float $amount Amount in kilograms
+     */
     public function __construct(
         float $amount
     )

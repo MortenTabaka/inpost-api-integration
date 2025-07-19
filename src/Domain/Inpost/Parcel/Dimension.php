@@ -12,6 +12,11 @@ class Dimension
     public float $height;
     public string $unit;
 
+    /**
+     * @param float $length Value in millimeters
+     * @param float $width Value in millimeters
+     * @param float $height Value in millimeters
+     */
     public function __construct(
         float $length,
         float $width,
