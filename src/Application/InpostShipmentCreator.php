@@ -7,6 +7,9 @@ use Exception;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\GuzzleException;
 
+/**
+ * Creates shipments with Inpost API
+ */
 class InpostShipmentCreator
 {
     private string $token;
@@ -42,6 +45,8 @@ class InpostShipmentCreator
     }
 
     /**
+     * Calls Inpost API to get created shipments
+     *
      * @return void
      */
     public function getCreatedShipments(): void
@@ -112,7 +117,7 @@ class InpostShipmentCreator
     }
 
     /**
-     * @return array
+     * @return array Returns array with today's date and current date and time
      */
     private function getDatesForLogs(): array
     {
