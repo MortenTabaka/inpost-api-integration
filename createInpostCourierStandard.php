@@ -2,7 +2,7 @@
 
 require __DIR__ . '/vendor/autoload.php';
 
-use Application\InpostShipmentCreator;
+use Application\InpostCourierShipmentCreator;
 use Domain\Inpost\Address;
 use Domain\Inpost\CourierStandardAdditionalServices;
 use Domain\Inpost\InpostCourierServices;
@@ -32,7 +32,7 @@ if (
     exit(1);
 }
 
-$shipmentsHandler = new InpostShipmentCreator(
+$shipmentsHandler = new InpostCourierShipmentCreator(
     $token,
     $organization,
     $baseInpostUri

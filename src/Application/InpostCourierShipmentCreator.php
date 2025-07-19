@@ -13,7 +13,7 @@ use GuzzleHttp\Exception\GuzzleException;
 /**
  * Creates shipments with Inpost API
  */
-class InpostShipmentCreator
+class InpostCourierShipmentCreator
 {
     private string $token;
 
