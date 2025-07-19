@@ -65,6 +65,7 @@ class InpostCourierShipmentCreator
         Insurance $insurance,
         string $service,
         array $additionalServices,
+        string $sendingMethod,
         string $reference = '',
         string $comments = ''
     ): void
@@ -78,8 +79,9 @@ class InpostCourierShipmentCreator
                 'insurance' => $this->buildInsurance($insurance),
                 'service' => $service,
                 'additional_services' => $additionalServices,
+                'custom_attributes' => ['sending_method' => $sendingMethod],
                 'reference' => $reference,
-                'comments' => $comments
+                'comments' => $comments,
             ];
 
             if ($sender) {

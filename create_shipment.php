@@ -72,5 +72,6 @@ $shipmentsHandler->createShipment(
     $parcels,
     $insurance,
     InpostCourierServices::INPOST_COURIER_STANDARD,
-    [CourierStandardAdditionalServices::EMAIL]
+    [CourierStandardAdditionalServices::EMAIL],
+    'dispatch_order'
 );
