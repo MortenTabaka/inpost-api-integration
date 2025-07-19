@@ -11,6 +11,7 @@ use Domain\Inpost\Parcel\Dimension;
 use Domain\Inpost\Parcel\Parcel;
 use Domain\Inpost\Parcel\Weight;
 use Domain\Inpost\Participant;
+use Domain\Inpost\SendingMethods;
 
 $token = getenv('INPOST_TOKEN');
 
@@ -73,5 +74,5 @@ $shipmentsHandler->createShipment(
     $insurance,
     InpostCourierServices::INPOST_COURIER_STANDARD,
     [CourierStandardAdditionalServices::EMAIL],
-    'dispatch_order'
+    SendingMethods::DISPATCH_ORDER
 );
