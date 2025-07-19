@@ -2,7 +2,7 @@
 
 namespace Domain\Inpost;
 
-enum InpostCourierServicesEnum
+enum InpostCourierServices
 {
     /**
      * Przesyłka kurierska standardowa
