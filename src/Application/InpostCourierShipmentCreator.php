@@ -190,17 +190,23 @@ class InpostCourierShipmentCreator
     }
 
     /**
+     * In case of a courier service offer (inpost_courier_c2c included),
+     * at least receiver.phone_number, receiver.company_name and/or receiver.first_name and receiver.last_name and address
+     * object should be provided.
+     *
      * @param Participant $receiver
      * @return void
      */
     private function validateReceiver(Participant $receiver): void
     {
         if (
-            empty($receiver->phone) &&
-            empty($receiver->companyName) &&
+            empty($receiver->phone) ||
             (
-                empty($receiver->firstName) &&
-                empty($receiver->lastName)
+                empty($receiver->companyName) &&
+                (
+                    empty($receiver->firstName) &&
+                    empty($receiver->lastName)
+                )
             )
         ) {
             throw new \RuntimeException('Receiver data is missing');
