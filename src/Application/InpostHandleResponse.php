@@ -3,7 +3,9 @@
 namespace Application;
 
 use DateTime;
+use Domain\Inpost\StatusCodes;
 use GuzzleHttp\Exception\RequestException;
+use JsonException;
 use Psr\Http\Message\ResponseInterface;
 
 class InpostHandleResponse
@@ -15,6 +17,7 @@ class InpostHandleResponse
      *
      * @param $error
      * @return void
+     * @throws JsonException
      */
     public function logError($error): void
     {
@@ -22,13 +25,18 @@ class InpostHandleResponse
 
         if ($error instanceof RequestException && $error->hasResponse()) {
             $response = $error->getResponse();
-            $body = $response?->getBody()->getContents();
-            $message = "[{$nowFormatted}] HTTP {$response?->getStatusCode()} Error: {$body}";
+
+            if (!$response) {
+                return;
+            }
+
+            $this->processApiError($response, $nowFormatted);
         } else {
             $message = "[{$nowFormatted}] Exception: {$error->getMessage()}";
+
+            echo $message . PHP_EOL;
         }
 
-        echo $message . PHP_EOL;
 
         // save to txt file
         file_put_contents(
@@ -53,7 +61,7 @@ class InpostHandleResponse
         // save to txt file
         file_put_contents(
             "{$this->logDir}/$today-success.txt",
-            "[$nowFormatted] " . $response->getBody()->getContents() . "\n",
+            "[$nowFormatted] " . $response->getBody()->getContents() . PHP_EOL,
             FILE_APPEND
         );
     }
@@ -67,5 +75,33 @@ class InpostHandleResponse
         $today = $now->format('d-m-Y');
         $nowFormatted = $now->format('Y-m-d H:i:s.v');
         return array($today, $nowFormatted);
+    }
+
+    /**
+     * @param ResponseInterface $response
+     * @param mixed $nowFormatted
+     * @return void
+     * @throws JsonException
+     */
+    private function processApiError(ResponseInterface $response, mixed $nowFormatted): void
+    {
+        $statusCode = $response->getStatusCode();
+
+        $body = $response->getBody();
+
+        $contents = $body->getContents();
+
+        $message = "[{$nowFormatted}] HTTP {$response->getStatusCode()} Error: $contents" . PHP_EOL;
+
+        $contentsDecoded = json_decode($contents, true, 512, JSON_THROW_ON_ERROR);
+
+        if (
+            $contentsDecoded['error'] === "missing_trucker_id"
+            && $statusCode === StatusCodes::UNAUTHORIZED->value
+        ) {
+            echo "Wymagane jest posiadanie realnej umowy z Inpostem (według informacji z infolinii)" . PHP_EOL;
+        } else {
+            echo $message . PHP_EOL;
+        }
     }
 }
