@@ -2,7 +2,6 @@
 
 namespace Application;
 
-use DateTime;
 use Domain\Inpost\Insurance;
 use Domain\Inpost\Parcel\Parcel;
 use Domain\Inpost\Participant;
@@ -124,6 +123,8 @@ class InpostCourierShipmentCreator
     }
 
     /**
+     * Create participant data for receiver or sender
+     *
      * @param Participant $receiver
      * @return array
      */
