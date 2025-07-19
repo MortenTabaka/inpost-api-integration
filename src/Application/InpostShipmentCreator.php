@@ -66,7 +66,7 @@ class InpostShipmentCreator
                 "/v1/organizations/{$this->organizationId}/shipments",
                 [
                     'headers' => ['Authorization' => "Bearer $this->token", 'Content-Type' => 'application/json'],
-                    'data-raw' => [
+                    'json' => [
                         'receiver' => $this->buildReceiver($receiver),
                         'parcels' => $this->buildParcels($parcels),
                         'insurance' => [
