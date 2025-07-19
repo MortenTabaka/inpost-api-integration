@@ -3,11 +3,12 @@
 require __DIR__ . '/vendor/autoload.php';
 
 use Application\InpostShipmentCreator;
-use Domain\Address;
-use Domain\Dimension;
-use Domain\Parcel;
-use Domain\Receiver;
-use Domain\Weight;
+use Domain\Inpost\Address;
+use Domain\Inpost\Dimension;
+use Domain\Inpost\InpostCourierServicesEnum;
+use Domain\Inpost\Parcel;
+use Domain\Inpost\Receiver;
+use Domain\Inpost\Weight;
 
 $token = getenv('INPOST_TOKEN');
 
@@ -64,5 +65,5 @@ $parcels = [
 $shipmentsHandler->createShipment(
     $receiver,
     $parcels,
-    'inpost_courier_standard'
+    InpostCourierServicesEnum::INPOST_COURIER_STANDARD
 );
