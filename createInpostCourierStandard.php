@@ -4,8 +4,10 @@ require __DIR__ . '/vendor/autoload.php';
 
 use Application\InpostShipmentCreator;
 use Domain\Inpost\Address;
+use Domain\Inpost\CourierStandardAdditionalServices;
 use Domain\Inpost\Dimension;
-use Domain\Inpost\InpostCourierServicesEnum;
+use Domain\Inpost\InpostCourierServices;
+use Domain\Inpost\Insurance;
 use Domain\Inpost\Parcel;
 use Domain\Inpost\Receiver;
 use Domain\Inpost\Weight;
@@ -62,8 +64,12 @@ $parcels = [
     )
 ];
 
+$insurance = new Insurance(100, 'PLN');
+
 $shipmentsHandler->createShipment(
     $receiver,
     $parcels,
-    InpostCourierServicesEnum::INPOST_COURIER_STANDARD
+    $insurance,
+    InpostCourierServices::INPOST_COURIER_STANDARD,
+    [CourierStandardAdditionalServices::EMAIL]
 );

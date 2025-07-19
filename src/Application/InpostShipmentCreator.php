@@ -3,6 +3,7 @@
 namespace Application;
 
 use DateTime;
+use Domain\Inpost\Insurance;
 use Domain\Inpost\Parcel;
 use Domain\Inpost\Receiver;
 use Exception;
@@ -42,13 +43,21 @@ class InpostShipmentCreator
     /**
      * @param Receiver $receiver
      * @param Parcel[] $parcels
+     * @param Insurance $insurance
      * @param string $service
+     * @param string[] $additionalServices
+     * @param string $reference
+     * @param string $comments
      * @return void
      */
     public function createShipment(
         Receiver $receiver,
         array $parcels,
-        string $service
+        Insurance $insurance,
+        string $service,
+        array $additionalServices,
+        string $reference = '',
+        string $comments = ''
     ): void
     {
         try {
@@ -62,17 +71,13 @@ class InpostShipmentCreator
                             $this->buildParcels($parcels)
                         ],
                         'insurance' => [
-                            'amount' => 25,
-                            'currency' => 'PLN'
-                        ],
-                        'cod' => [
-                            'amount' => 12.50,
-                            'currency' => 'PLN'
+                            'amount' => $insurance->amount,
+                            'currency' => $insurance->currency
                         ],
                         'service' => $service,
-                        'additional_services' => ['email', 'sms'],
-                        'reference' => 'Test',
-                        'comments' => 'dowolny komentarz'
+                        'additional_services' => $additionalServices,
+                        'reference' => $reference,
+                        'comments' => $comments
                     ]
                 ]
             );
