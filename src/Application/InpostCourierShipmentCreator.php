@@ -2,9 +2,11 @@
 
 namespace Application;
 
+use Domain\Inpost\InpostCourierServices;
 use Domain\Inpost\Insurance;
 use Domain\Inpost\Parcel\Parcel;
 use Domain\Inpost\Participant;
+use Domain\Inpost\SendingMethods;
 use Exception;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\GuzzleException;
@@ -72,6 +74,8 @@ class InpostCourierShipmentCreator
     {
         try {
             $this->validateReceiver($receiver);
+
+            $this->validateSendingMethod($sendingMethod, $service);
 
             $body = [
                 'receiver' => $this->buildParticipantData($receiver),
@@ -213,6 +217,29 @@ class InpostCourierShipmentCreator
             )
         ) {
             throw new \RuntimeException('Receiver data is missing');
+        }
+    }
+
+    /**
+     * Validate sending method with chosen service.
+     * @see https://dokumentacja-inpost.atlassian.net/wiki/spaces/PL/pages/11731047/Spos+b+nadania
+     *
+     * @param string $sendingMethod
+     * @param string $service
+     * @return void
+     */
+    private function validateSendingMethod(string $sendingMethod, string $service): void
+    {
+        if (
+            $sendingMethod === SendingMethods::PARCEL_LOCKER
+            && in_array($service, [
+                InpostCourierServices::INPOST_COURIER_STANDARD,
+                InpostCourierServices::INPOST_COURIER_EXPRESS_1000,
+                InpostCourierServices::INPOST_COURIER_EXPRESS_1200,
+                InpostCourierServices::INPOST_COURIER_EXPRESS_1700,
+            ], true)
+        ) {
+            throw new \RuntimeException('Parcel locker is not available for this service: ' . $service);
         }
     }
 }
