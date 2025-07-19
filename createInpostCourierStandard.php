@@ -14,7 +14,7 @@ $token = $_ENV['INPOST_API_TOKEN'] ?? null;
 if ($token) {
     echo "Found INPOST_API_TOKEN.\n";
 } else {
-    echo "INPOST_API_TOKEN is not set in environment variables.\n";
+    echo "INPOST_API_TOKEN is missing in .env file.\n.\n";
     exit(1);
 }
 
