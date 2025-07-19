@@ -41,7 +41,7 @@ class InpostShipmentCreator
 
     /**
      * @param Receiver $receiver
-     * @param Parcel[] $parcel
+     * @param Parcel[] $parcels
      * @param string $service
      * @return void
      */
