@@ -30,13 +30,12 @@ class InpostHandleResponse
                 return;
             }
 
-            $this->processApiError($response, $nowFormatted);
+            $message = $this->processApiError($response, $nowFormatted);
         } else {
             $message = "[{$nowFormatted}] Exception: {$error->getMessage()}";
-
-            echo $message . PHP_EOL;
         }
 
+        echo $message . PHP_EOL;
 
         // save to txt file
         file_put_contents(
@@ -47,7 +46,7 @@ class InpostHandleResponse
     }
 
     /**
-     * Saves success message to txt file in var/logs
+     * Saves success message to txt file in var/logs and echos it
      *
      * @param ResponseInterface $response
      * @return void
@@ -78,12 +77,14 @@ class InpostHandleResponse
     }
 
     /**
+     * Processes API error and saves it to txt file
+     *
      * @param ResponseInterface $response
      * @param mixed $nowFormatted
-     * @return void
+     * @return string
      * @throws JsonException
      */
-    private function processApiError(ResponseInterface $response, mixed $nowFormatted): void
+    private function processApiError(ResponseInterface $response, mixed $nowFormatted): string
     {
         $statusCode = $response->getStatusCode();
 
@@ -91,17 +92,17 @@ class InpostHandleResponse
 
         $contents = $body->getContents();
 
-        $message = "[{$nowFormatted}] HTTP {$response->getStatusCode()} Error: $contents" . PHP_EOL;
-
         $contentsDecoded = json_decode($contents, true, 512, JSON_THROW_ON_ERROR);
 
         if (
-            $contentsDecoded['error'] === "missing_trucker_id"
-            && $statusCode === StatusCodes::BAD_REQUEST->value
+            $statusCode === StatusCodes::BAD_REQUEST->value
+            && $contentsDecoded['error'] === "missing_trucker_id"
         ) {
-            echo "Wymagane jest posiadanie realnej umowy z Inpostem (według informacji z infolinii)" . PHP_EOL;
+            $message = "[HTTP {$response->getStatusCode()}][missing_trucker_id] Wymagane jest posiadanie realnej umowy z Inpostem (według informacji z infolinii)" . PHP_EOL;
         } else {
-            echo $message . PHP_EOL;
+            $message = "[HTTP {$response->getStatusCode()}] Error: $contents" . PHP_EOL;
         }
+
+        return "[{$nowFormatted}] " . $message;
     }
 }
