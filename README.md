@@ -16,10 +16,12 @@ Wykorzystuje Guzzle do komunikacji HTTP i vlucas/phpdotenv do konfiguracji.
 
 Utworzenie katalogu i instalacja bibliotek
 ```bash
-git clone git@github.com:MortenTabaka/focus-garden-recrutement-task.git
-cd focus-garden-recrutement-task
+git clone git@github.com:MortenTabaka/marcin-tabaka-focus-garden-recrutement-task.git
+cd marcin-tabaka-focus-garden-recrutement-task
 composer install
 ```
+
+Uzupełnij zmienne środowiskowe w pliku `.env`
 
 ## 🚀 Użycie
 ```bash
