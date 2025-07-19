@@ -9,8 +9,6 @@ use Domain\Inpost\Receiver;
 use Exception;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\GuzzleException;
-use GuzzleHttp\Exception\RequestException;
-use Psr\Http\Message\ResponseInterface;
 
 /**
  * Creates shipments with Inpost API
@@ -23,7 +21,7 @@ class InpostShipmentCreator
 
     private Client $inpostClient;
 
-    private string $logDir = __DIR__ . '/../../var/logs';
+    private InpostHandleResponse $inpostHandleResponse;
 
 
     public function __construct(
@@ -39,6 +37,8 @@ class InpostShipmentCreator
         $this->inpostClient = new Client([
             'base_uri' => $baseInpostUri
         ]);
+
+        $this->inpostHandleResponse = new InpostHandleResponse();
     }
 
     /**
@@ -46,7 +46,7 @@ class InpostShipmentCreator
      *
      * @param Receiver $receiver
      * @param Parcel[] $parcels
-     * @param Insurance $insurance
+     * @param Insurance $insurance  // required for
      * @param string $service
      * @param string[] $additionalServices
      * @param string $reference
@@ -71,10 +71,7 @@ class InpostShipmentCreator
                     'json' => [
                         'receiver' => $this->buildReceiver($receiver),
                         'parcels' => $this->buildParcels($parcels),
-                        'insurance' => [
-                            'amount' => $insurance->amount,
-                            'currency' => $insurance->currency
-                        ],
+                        'insurance' => $this->buildInsurance($insurance),
                         'service' => $service,
                         'additional_services' => $additionalServices,
                         'reference' => $reference,
@@ -82,9 +79,9 @@ class InpostShipmentCreator
                     ]
                 ]
             );
-            $this->logSuccess($response);
+            $this->inpostHandleResponse->logSuccess($response);
         } catch (\Exception | GuzzleException $e) {
-            $this->logError( $e);
+            $this->inpostHandleResponse->logError( $e);
         }
     }
 
@@ -104,69 +101,10 @@ class InpostShipmentCreator
                 ]
             );
 
-            $this->logSuccess($response);
+            $this->inpostHandleResponse->logSuccess($response);
         } catch (Exception|GuzzleException $e) {
-            $this->logError($e);
+            $this->inpostHandleResponse->logError($e);
         }
-    }
-
-    /**
-     * Saves success message to txt file in var/logs
-     *
-     * @param ResponseInterface $response
-     * @return void
-     */
-    private function logSuccess(ResponseInterface $response): void
-    {
-        echo $response->getBody()->getContents();
-
-        [$today, $nowFormatted] = $this->getDatesForLogs();
-
-        // save to txt file
-        file_put_contents(
-            "{$this->logDir}/$today-success.txt",
-            "[$nowFormatted] " . $response->getBody()->getContents() . "\n",
-            FILE_APPEND
-        );
-    }
-
-    /**
-     * Saves error to txt file in var/logs
-     *
-     * @param $error
-     * @return void
-     */
-    private function logError($error): void
-    {
-        [$today, $nowFormatted] = $this->getDatesForLogs();
-
-        if ($error instanceof RequestException && $error->hasResponse()) {
-            $response = $error->getResponse();
-            $body = $response?->getBody()->getContents();
-            $message = "[{$nowFormatted}] HTTP {$response?->getStatusCode()} Error: {$body}";
-        } else {
-            $message = "[{$nowFormatted}] Exception: {$error->getMessage()}";
-        }
-
-        echo $message . PHP_EOL;
-
-        // save to txt file
-        file_put_contents(
-            "{$this->logDir}/$today-error.txt",
-            "[$nowFormatted] " . $error->getMessage() . "\n",
-            FILE_APPEND
-        );
-    }
-
-    /**
-     * @return array Returns array with today's date and current date and time
-     */
-    private function getDatesForLogs(): array
-    {
-        $now = new DateTime();
-        $today = $now->format('d-m-Y');
-        $nowFormatted = $now->format('Y-m-d H:i:s.v');
-        return array($today, $nowFormatted);
     }
 
     /**
@@ -192,6 +130,8 @@ class InpostShipmentCreator
     }
 
     /**
+     * Create parcel data for shipment
+     *
      * @param Parcel[] $parcels
      * @return array
      */
@@ -217,5 +157,27 @@ class InpostShipmentCreator
         }
 
         return $parcelObjects;
+    }
+
+    /**
+     * Create insurance object for shipment. Required for courier shipments.
+     *
+     * @param Insurance $insurance
+     * @return array
+     */
+    private function buildInsurance(Insurance $insurance): array
+    {
+        return [
+            'amount' => $insurance->amount,
+            'currency' => $insurance->currency
+        ];
+    }
+
+    /**
+     * @return string
+     */
+    public function getLogDir(): string
+    {
+        return $this->logDir;
     }
 }
