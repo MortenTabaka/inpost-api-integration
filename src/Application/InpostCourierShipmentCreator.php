@@ -2,6 +2,7 @@
 
 namespace Application;
 
+use Domain\Inpost\COD;
 use Domain\Inpost\InpostCourierServices;
 use Domain\Inpost\Insurance;
 use Domain\Inpost\Parcel\Parcel;
@@ -64,7 +65,8 @@ class InpostCourierShipmentCreator
         ?Participant $sender,
         Participant $receiver,
         array $parcels,
-        Insurance $insurance,
+        ?Insurance $insurance,
+        ?COD $cod,
         string $service,
         array $additionalServices,
         string $sendingMethod,
@@ -80,7 +82,6 @@ class InpostCourierShipmentCreator
             $body = [
                 'receiver' => $this->buildParticipantData($receiver),
                 'parcels' => $this->buildParcels($parcels),
-                'insurance' => $this->buildInsurance($insurance),
                 'service' => $service,
                 'additional_services' => $additionalServices,
                 'custom_attributes' => ['sending_method' => $sendingMethod],
@@ -90,6 +91,18 @@ class InpostCourierShipmentCreator
 
             if ($sender) {
                 $body['sender'] = $this->buildParticipantData($sender);
+            }
+
+            if ($insurance) {
+                $body['insurance'] = $this->buildInsurance($insurance);
+            }
+
+            if ($cod) {
+                if (!$insurance) {
+                    throw new \RuntimeException('Insurance is required when cash collection amount is provided');
+                }
+
+                $body['cod'] = $this->buildCOD($cod);
             }
 
             $response = $this->inpostClient->post(
@@ -241,5 +254,19 @@ class InpostCourierShipmentCreator
         ) {
             throw new \RuntimeException('Parcel locker is not available for this service: ' . $service);
         }
+    }
+
+    /**
+     * Build cash collection amount object
+     *
+     * @param COD $cod
+     * @return array
+     */
+    private function buildCOD(COD $cod): array
+    {
+        return [
+            'amount' => $cod->amount,
+            'currency' => $cod->currency
+        ];
     }
 }
