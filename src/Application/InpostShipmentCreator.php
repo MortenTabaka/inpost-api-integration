@@ -172,12 +172,4 @@ class InpostShipmentCreator
             'currency' => $insurance->currency
         ];
     }
-
-    /**
-     * @return string
-     */
-    public function getLogDir(): string
-    {
-        return $this->logDir;
-    }
 }
